@@ -1,4 +1,8 @@
-## Hi there 👋
+Welcome to my Portfolio! I am an MSc Business Analytics and Artificial Intelligence student in the UK with hands-on experience in business analysis, marketing analytics and digital transformation. My work focuses on translating business problems into clear requirements, data insights and practical solutions through tools such as SQL, Python, Power BI, Excel, Figma and ClickUp.
+
+My portfolio includes projects in customer churn analytics, recommendation systems, e-commerce database design and logistics optimisation. Each project demonstrates my ability to explore data, structure problems, communicate insights and connect technical outputs with business decision-making.
+
+Thank you for visiting my portfolio. I am currently building my career toward Junior Business Analyst, Data Analyst and Business Analytics roles, with a strong interest in data-driven transformation and AI-enabled business solutions.
 
 <!--
 **nhunghoang269/nhunghoang269** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
