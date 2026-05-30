@@ -1,3 +1,5 @@
+**Business Analyst Portfolio**
+
 Welcome to my Portfolio! I am an MSc Business Analytics and Artificial Intelligence student in the UK with hands-on experience in business analysis, marketing analytics and digital transformation. My work focuses on translating business problems into clear requirements, data insights and practical solutions through tools such as SQL, Python, Power BI, Excel, Figma and ClickUp.
 
 My portfolio includes projects in customer churn analytics, recommendation systems, e-commerce database design and logistics optimisation. Each project demonstrates my ability to explore data, structure problems, communicate insights and connect technical outputs with business decision-making.
