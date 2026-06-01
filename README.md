@@ -38,8 +38,10 @@ This project designs a scalable and secure relational database system for an e-c
 ## Prescriptive Analytics and Simulation
 
 ### [Logistics Optimisation & Simulation](./Prescriptive-Analytics-and-Simulation/Logistics-Optimisation-Simulation)
-[Optimisation](./Prescriptive-Analytics-and-Simulation/Logistics-Optimisation-Simulation/Excel:Prescriptive Analysis.xlsm)
-Simulation: [Scenario 1](./Prescriptive-Analytics-and-Simulation/Logistics-Optimisation-Simulation/Simulation_Case 1.S8), [Scenario 2](./Prescriptive-Analytics-and-Simulation/Logistics-Optimisation-Simulation/Simulation_Case 2.S8), [Scenario 3](./Prescriptive-Analytics-and-Simulation/Logistics-Optimisation-Simulation/Simulation_Case 3.S8)
+[Optimisation](./Prescriptive-Analytics-and-Simulation/Logistics-Optimisation-Simulation/Prescriptive_Analysis.xlsm)
+Simulation: [Scenario 1](./Prescriptive-Analytics-and-Simulation/Logistics-Optimisation-Simulation/Simulation_Scenario1.S8
+) | [Scenario 2](./Prescriptive-Analytics-and-Simulation/Logistics-Optimisation-Simulation/Simulation_Scenario2.S8
+) | [Scenario 3](./Prescriptive-Analytics-and-Simulation/Logistics-Optimisation-Simulation/Simulation_Scenario3.S8)
 
 This project applies optimisation and simulation modelling to support supply chain and warehouse decisions, balancing cost, carbon emissions, waiting time, resource utilisation and operational performance.
 
