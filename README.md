@@ -16,7 +16,11 @@ This project applies business analytics and AI principles to customer churn mana
 **Skills:** Python, Pandas, Scikit-learn, EDA, Predictive Modelling, Evaluation Metrics, Business Recommendations
 
 ### [Movie Recommender System](./Predictive-Analytics-and-AI/Movie-Recommender-System)
-Code: [Content-Based Model 1](./Predictive-Analytics-and-AI/Movie-Recommender-System/RS_Content Based Model 1.py), [Content-Based Model 2](./Predictive-Analytics-and-AI/Movie-Recommender-System/RS_Content Based Model 2.py), [Item-Based Model](./Predictive-Analytics-and-AI/Movie-Recommender-System/RS_Item Based Model.py), [Popularity Model](./Predictive-Analytics-and-AI/Movie-Recommender-System/RS_Popularity Model.py)
+Code Files: 
+[Content-Based Model 1](./Predictive-Analytics-and-AI/Movie-Recommender-System/RS_Content Based Model 1.py)
+[Content-Based Model 2](./Predictive-Analytics-and-AI/Movie-Recommender-System/RS_Content Based Model 2.py)
+[Item-Based Model](./Predictive-Analytics-and-AI/Movie-Recommender-System/RS_Item Based Model.py)
+[Popularity Model](./Predictive-Analytics-and-AI/Movie-Recommender-System/RS_Popularity Model.py)
 
 This project develops and evaluates recommendation approaches for a movie streaming platform, focusing on personalisation, content discovery, engagement and ethical recommendation design.
 
