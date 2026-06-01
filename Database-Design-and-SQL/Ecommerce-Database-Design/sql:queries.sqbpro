@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="Distinc.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1563"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="0" parent="0"/><expanded_item id="7" parent="0"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="Customer" custom_title="0" dock_id="15" table="4,8:mainCustomer"/><dock_state state="000000ff00000000fd00000001000000020000028f000002fffc0100000004fb000000160064006f0063006b00420072006f007700730065003101000000000000028f0000000000000000fb000000180064006f0063006b00420072006f007700730065003100320100000000ffffffff0000000000000000fc000000000000028f0000000000fffffffa000000000100000002fb000000180064006f0063006b00420072006f007700730065003100330100000000ffffffff0000000000000000fb000000180064006f0063006b00420072006f007700730065003100340100000000ffffffff0000000000000000fb000000180064006f0063006b00420072006f0077007300650031003501000000000000028f0000010e00ffffff0000028f0000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Customer" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="86"/><column index="2" value="94"/><column index="3" value="154"/><column index="4" value="89"/><column index="5" value="67"/><column index="6" value="118"/><column index="7" value="110"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Region" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="67"/><column index="2" value="139"/><column index="3" value="61"/><column index="4" value="74"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">/*PRAGMA foreign_keys = ON;
+*/PRAGMA foreign_keys;</sql><sql name="SQL 2">
+/*WITH
+params AS (
+  SELECT date('now', '-12 months') AS start_date
+),
+orders_normalized AS (
+  SELECT
+    o.OrderID,
+    o.CustomerID,
+    o.OrderStatus,
+    CASE
+      WHEN o.Date LIKE '__/__/____%' THEN substr(o.Date, 7, 4) || '-' || substr(o.Date, 1, 2) || '-' || substr(o.Date, 4, 2)
+      WHEN o.Date LIKE '____-__-__%' THEN substr(o.Date, 1, 10)
+      ELSE NULL
+    END AS order_date_iso
+  FROM CustomerOrder o
+),
+orders_in_window AS (
+  SELECT n.OrderID, n.CustomerID, n.order_date_iso
+  FROM orders_normalized n
+  JOIN params p
+   WHERE n.order_date_iso IS NOT NULL
+     AND julianday(n.order_date_iso) &gt;= julianday(p.start_date)
+     AND lower(ifnull(n.OrderStatus, '')) NOT LIKE 'cancelled'
+),
+order_counts AS (
+  SELECT CustomerID, COUNT(DISTINCT OrderID) AS orders_last_12m
+  FROM orders_in_window
+  GROUP BY CustomerID
+),
+type_qty AS (
+  SELECT
+    oiw.CustomerID,
+    pt.ProductTypeID,
+    pt.TypeName,
+    SUM(cso.QuantityPurchased) AS total_qty
+  FROM orders_in_window oiw
+  JOIN CustomerSuborder cso ON cso.OrderID = oiw.OrderID
+  JOIN Product p           ON p.ProductID  = cso.ProductID
+  JOIN ProductType pt      ON pt.ProductTypeID = p.ProductTypeID
+  GROUP BY oiw.CustomerID, pt.ProductTypeID, pt.TypeName
+),
+ranked_pref AS (
+  SELECT
+    tq.*,
+    ROW_NUMBER() OVER (PARTITION BY tq.CustomerID ORDER BY tq.total_qty DESC) AS rn,
+    SUM(tq.total_qty) OVER (PARTITION BY tq.CustomerID) AS tot_all_types
+  FROM type_qty tq
+),
+segmentation AS (
+  SELECT
+    c.CustomerID,
+    c.Name,
+    r.RegionName,
+    COALESCE(oc.orders_last_12m, 0) AS orders_last_12m,
+    CASE
+      WHEN COALESCE(oc.orders_last_12m, 0) &gt;= 12 THEN 'High'
+      WHEN COALESCE(oc.orders_last_12m, 0) BETWEEN 6 AND 11 THEN 'Medium'
+      WHEN COALESCE(oc.orders_last_12m, 0) BETWEEN 1 AND 5 THEN 'Low'
+      ELSE 'No orders'
+    END AS purchase_frequency_band,
+    rp.TypeName AS preferred_product_type,
+    rp.total_qty AS preferred_type_qty_12m,
+    ROUND(100.0 * rp.total_qty / NULLIF(rp.tot_all_types, 0), 1) AS preferred_type_share_pct
+  FROM Customer c
+  LEFT JOIN order_counts oc ON oc.CustomerID = c.CustomerID
+  LEFT JOIN ranked_pref rp  ON rp.CustomerID = c.CustomerID AND rp.rn = 1
+  LEFT JOIN Region r        ON r.RegionID    = c.RegionID
+)
+SELECT *
+FROM segmentation
+ORDER BY purchase_frequency_band DESC, preferred_type_share_pct DESC, CustomerID;
+
+/*WITH latest_sust AS (
+  SELECT
+    s.ProductID,
+    s.CarbonEmissionKg,
+    s.Recyclable,
+    s.SupplierCountry,
+    s.MeasurementDate,
+    s.EcoCertificate,
+    ROW_NUMBER() OVER (
+      PARTITION BY s.ProductID
+      ORDER BY s.MeasurementDate DESC
+    ) AS rn
+  FROM Sustainability s
+)
+SELECT
+  p.ProductID,
+  p.ProductName,
+  pt.TypeName AS ProductType,
+  ls.CarbonEmissionKg,
+  ls.Recyclable,
+  ls.SupplierCountry,
+  ls.MeasurementDate,
+  ls.EcoCertificate
+FROM latest_sust ls
+JOIN Product     p  ON p.ProductID     = ls.ProductID
+JOIN ProductType pt ON pt.ProductTypeID = p.ProductTypeID
+WHERE ls.rn = 1
+ORDER BY pt.TypeName, p.ProductName;
+
+/*WITH
+-- 1) Normalize ReferralDate to ISO (YYYY-MM-DD)
+ref_norm AS (
+  SELECT
+    r.RefererID,
+    r.RefereeID,
+    r.CampaignCode,
+    r.Reward,
+    r.ReferralDate AS original_date,
+    CASE
+      WHEN r.ReferralDate LIKE '__/__/____'
+        THEN substr(r.ReferralDate, 7, 4) || '-' || substr(r.ReferralDate, 1, 2) || '-' || substr(r.ReferralDate, 4, 2)
+      WHEN r.ReferralDate LIKE '____-__-__'
+        THEN r.ReferralDate
+      ELSE NULL
+    END AS referral_date_iso
+  FROM Referral r
+),
+
+-- 2) Month bucket (first day of month)
+monthly AS (
+  SELECT
+    r.CampaignCode,
+    date(referral_date_iso, 'start of month') AS month_start,
+    COUNT(DISTINCT r.RefereeID) AS new_referees
+  FROM ref_norm r
+  WHERE r.referral_date_iso IS NOT NULL
+  GROUP BY r.CampaignCode, date(referral_date_iso, 'start of month')
+),
+
+-- 3) Add previous month counts per campaign
+with_prev AS (
+  SELECT
+    m.*,
+    LAG(m.new_referees) OVER (
+      PARTITION BY m.CampaignCode
+      ORDER BY m.month_start
+    ) AS prev_month_referees
+  FROM monthly m
+)
+
+-- 4) Final view with MoM growth %
+SELECT
+  month_start,
+  CampaignCode,
+  new_referees,
+  prev_month_referees,
+  CASE
+    WHEN prev_month_referees IS NULL OR prev_month_referees = 0 THEN NULL
+    ELSE ROUND(100.0 * (new_referees - prev_month_referees) / prev_month_referees, 1)
+  END AS mom_growth_pct
+FROM with_prev
+ORDER BY month_start, CampaignCode;
+*/
+WITH
+-- 1) 12-month window start
+params AS (
+  SELECT date('now', '-12 months') AS start_date
+),
+
+-- 2) Normalize order dates to ISO YYYY-MM-DD
+orders_norm AS (
+  SELECT
+    o.OrderID,
+    o.CustomerID,
+    o.OrderStatus,
+    CASE
+      WHEN o.Date LIKE '__/__/____%' THEN substr(o.Date, 7, 4) || '-' || substr(o.Date, 1, 2) || '-' || substr(o.Date, 4, 2)
+      WHEN o.Date LIKE '____-__-__%' THEN substr(o.Date, 1, 10)
+      ELSE NULL
+    END AS order_date_iso
+  FROM CustomerOrder o
+),
+
+-- 3) Filter orders in window, excluding Cancelled
+orders_12m AS (
+  SELECT n.OrderID, n.CustomerID, n.order_date_iso
+  FROM orders_norm n
+  JOIN params p
+   WHERE n.order_date_iso IS NOT NULL
+     AND julianday(n.order_date_iso) &gt;= julianday(p.start_date)
+     AND lower(ifnull(n.OrderStatus,'')) NOT LIKE 'cancelled'
+),
+
+-- 4) Latest sustainability per product
+latest_sust AS (
+  SELECT
+    s.ProductID,
+    s.CarbonEmissionKg,
+    s.Recyclable,
+    ROW_NUMBER() OVER (
+      PARTITION BY s.ProductID
+      ORDER BY s.MeasurementDate DESC
+    ) AS rn
+  FROM Sustainability s
+),
+sust_latest AS (
+  SELECT ProductID, CarbonEmissionKg,
+         CASE WHEN Recyclable IN (1, '1', 'true', 'TRUE', 'True') THEN 1 ELSE 0 END AS RecyclableFlag
+  FROM latest_sust
+  WHERE rn = 1
+),
+
+-- 5) Region → items purchased with quantities and carbon
+region_items AS (
+  SELECT
+    c.RegionID,
+    so.ProductID,
+    so.QuantityPurchased,
+    sl.CarbonEmissionKg,
+    sl.RecyclableFlag
+  FROM orders_12m o
+  JOIN Customer c       ON c.CustomerID = o.CustomerID
+  JOIN CustomerSuborder so ON so.OrderID = o.OrderID
+  LEFT JOIN sust_latest sl  ON sl.ProductID = so.ProductID
+),
+
+-- 6) Region-level metrics (weighted averages)
+region_metrics AS (
+  SELECT
+    r.RegionID,
+    r.RegionName,
+    TRIM(r.CDPScore) AS CDPScore,
+    -- totals
+    SUM(COALESCE(QuantityPurchased,0)) AS units,
+    SUM(COALESCE(CarbonEmissionKg,0.0) * COALESCE(QuantityPurchased,0)) AS carbon_total,
+    SUM(COALESCE(QuantityPurchased,0) * COALESCE(RecyclableFlag,0)) AS recyclable_units
+  FROM region_items ri
+  JOIN Region r ON r.RegionID = ri.RegionID
+  GROUP BY r.RegionID, r.RegionName, r.CDPScore
+),
+
+-- 7) Derived metrics
+region_calc AS (
+  SELECT
+    rm.*,
+    CASE
+      WHEN rm.units &gt; 0 THEN rm.carbon_total * 1.0 / rm.units ELSE NULL
+    END AS avg_carbon_per_item,
+    CASE
+      WHEN rm.units &gt; 0 THEN rm.recyclable_units * 1.0 / rm.units ELSE NULL
+    END AS recyclable_share,
+    CASE TRIM(rm.CDPScore)
+      WHEN 'A' THEN 5 WHEN 'B' THEN 4 WHEN 'C' THEN 3 WHEN 'D' THEN 2 WHEN 'E' THEN 1 WHEN 'F' THEN 0
+      ELSE NULL
+    END AS cdp_num
+  FROM region_metrics rm
+),
+
+-- 8) Global bounds for normalization
+bounds AS (
+  SELECT
+    MIN(avg_carbon_per_item) AS min_carbon,
+    MAX(avg_carbon_per_item) AS max_carbon,
+    MIN(recyclable_share)    AS min_rec,
+    MAX(recyclable_share)    AS max_rec,
+    MIN(cdp_num)             AS min_cdp,
+    MAX(cdp_num)             AS max_cdp
+  FROM region_calc
+),
+
+-- 9) Normalize [0..1] and compute composite Eco-Conscious Score
+final AS (
+  SELECT
+    rc.RegionID,
+    rc.RegionName,
+    rc.CDPScore,
+    rc.units,
+    rc.avg_carbon_per_item,
+    rc.recyclable_share,
+    rc.cdp_num,
+    -- normalized components
+    (rc.cdp_num - b.min_cdp) * 1.0 / NULLIF(b.max_cdp - b.min_cdp, 0) AS norm_cdp,
+    (rc.avg_carbon_per_item - b.min_carbon) * 1.0 / NULLIF(b.max_carbon - b.min_carbon, 0) AS norm_carbon,
+    (rc.recyclable_share - b.min_rec) * 1.0 / NULLIF(b.max_rec - b.min_rec, 0) AS norm_recyclable,
+    -- composite score (adjust weights as you wish)
+    ROUND(100.0 * (
+      0.5 * ((rc.cdp_num - b.min_cdp) * 1.0 / NULLIF(b.max_cdp - b.min_cdp, 0)) +
+      0.3 * ((rc.recyclable_share - b.min_rec) * 1.0 / NULLIF(b.max_rec - b.min_rec, 0)) +
+      0.2 * (1.0 - ((rc.avg_carbon_per_item - b.min_carbon) * 1.0 / NULLIF(b.max_carbon - b.min_carbon, 0)))
+    ), 1) AS eco_conscious_score
+  FROM region_calc rc
+  CROSS JOIN bounds b
+)
+
+-- 10) Ranked output
+SELECT
+  RegionID,
+  RegionName,
+  CDPScore,
+  units,
+  ROUND(avg_carbon_per_item, 3) AS avg_carbon_per_item,
+  ROUND(recyclable_share, 3)    AS recyclable_share,
+  eco_conscious_score
+FROM final
+ORDER BY eco_conscious_score DESC, recyclable_share DESC, avg_carbon_per_item ASC;
+</sql><current_tab id="1"/></tab_sql></sqlb_project>
