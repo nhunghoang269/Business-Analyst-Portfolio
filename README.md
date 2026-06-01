@@ -9,7 +9,7 @@ My portfolio showcases projects across descriptive, predictive & prescriptive an
 ## Descriptive & Predictive Analytics and AI
 
 ### [Customer Churn Analytics & AI](./Descriptive-Analytics-and-AI/Customer-Churn-Analytics-AI)
-[Churn Analytics](./Descriptive-Analytics-and-AI/Customer-Churn-Analytics-AI/Customer Churn Analysis.xlsx)
+[Churn Analytics](./Descriptive-Analytics-and-AI/Customer-Churn-Analytics-AI/Customer_Churn_Analysis.xlsx)
 
 This project applies business analytics and AI principles to customer churn management for a subscription-based business. It explores churn drivers, identifies high-risk customers and provides retention recommendations based on analytical findings.
 
