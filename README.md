@@ -29,7 +29,7 @@ This project develops and evaluates recommendation approaches for a movie stream
 ## Database Design and SQL
 
 ### [E-commerce Database Design with SQL](./Database-Design-and-SQL/Ecommerce-Database-Design)
-Code: [E-commerce Analysis](./Database-Design-and-SQL/Ecommerce-Database-Design/sql:queries.sqbpro)
+Code: [E-commerce Analysis](./Database-Design-and-SQL/Ecommerce-Database-Design/sql_queries.sqbpro)
 
 This project designs a scalable and secure relational database system for an e-commerce start-up, covering ER modelling, SQL table creation, business intelligence queries and data management considerations.
 
