@@ -6,6 +6,18 @@ My portfolio showcases projects across descriptive, predictive & prescriptive an
 
 ## Portfolio Projects
 
+## Business Intelligence and Dashboarding
+### Adventure Works Sales Dashboard
+
+Key Files:
+
+[Power BI Dashboard](./Business-Intelligence-and-Dashboarding/AdventureWorks-Sales-Dashboard/Adventure_Works_Sales_Dashboard.pbix)
+[Dashboard Screenshot](./Business-Intelligence-and-Dashboarding/AdventureWorks-Sales-Dashboard/overview_dashboard.png.png)
+
+This project develops an interactive Power BI dashboard to monitor sales performance, target achievement, regional sales trends and product category profitability. The dashboard enables stakeholders to analyse KPIs, compare performance across continents and support data-driven business decisions.
+
+Skills: Power BI, DAX, Data Modelling, KPI Reporting, Dashboard Design, Business Intelligence, Data Visualisation
+
 ## Descriptive & Predictive Analytics and AI
 
 ### [Customer Churn Analytics & AI](./Descriptive-Analytics-and-AI/Customer-Churn-Analytics-AI)
