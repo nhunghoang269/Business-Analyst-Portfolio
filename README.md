@@ -11,7 +11,7 @@ My portfolio showcases projects across descriptive, predictive & prescriptive an
 
 Key Files:
 
-[Power BI Dashboard](./Business-Intelligence-and-Dashboarding/AdventureWorks-Sales-Dashboard/Adventure_Works_Sales_Dashboard.pbix)
+[Power BI Dashboard](./Business-Intelligence-and-Dashboarding/AdventureWorks-Sales-Dashboard/Adventure_Works_Sales_Dashboard.pbix) | 
 [Dashboard Screenshot](./Business-Intelligence-and-Dashboarding/AdventureWorks-Sales-Dashboard/overview_dashboard.png.png)
 
 This project develops an interactive Power BI dashboard to monitor sales performance, target achievement, regional sales trends and product category profitability. The dashboard enables stakeholders to analyse KPIs, compare performance across continents and support data-driven business decisions.
