@@ -39,8 +39,7 @@ Develop an interactive Power BI dashboard that enables stakeholders to track key
 The dashboard enables stakeholders to monitor business performance in real time, identify growth opportunities, compare regional sales performance and support data-driven decision-making.
 
 ## Dashboard Preview
-
-
+[Dashboard Screenshot](./Business-Intelligence-and-Dashboarding/AdventureWorks-Sales-Dashboard/overview_dashboard.png.png)
 
 ## Key Files
-
+[Dashboard File](./Business-Intelligence-and-Dashboarding/AdventureWorks-Sales-Dashboard/Adventure Works Sales Dashboard)
