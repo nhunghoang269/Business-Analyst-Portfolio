@@ -42,4 +42,4 @@ The dashboard enables stakeholders to monitor business performance in real time,
 [Dashboard Screenshot](./Business-Intelligence-and-Dashboarding/AdventureWorks-Sales-Dashboard/overview_dashboard.png.png)
 
 ## Key Files
-[Dashboard File](./Business-Intelligence-and-Dashboarding/AdventureWorks-Sales-Dashboard/Adventure Works Sales Dashboard)
+[Dashboard File](./Business-Intelligence-and-Dashboarding/AdventureWorks-Sales-Dashboard/Adventure_Works_Sales_Dashboard.pbix)
